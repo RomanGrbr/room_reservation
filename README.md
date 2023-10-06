@@ -12,8 +12,24 @@ alembic revision
 Автогенерация миграций
 alembic revision --autogenerate
 
+Фиксированный Revision ID
+alembic revision --autogenerate -m "Initial structure" --rev-id 01
+
 Применить миграции
 alembic upgrade
 
+Выполнение всех неприменённых миграций
+alembic upgrade head
+
 Отмена миграций
 alembic downgrade
+
+все миграции в хронологическом порядке
+alembic history
+alembic history -v
+
+Посмотреть последнюю применённую миграцию
+alembic current
+
+вывести метку актуальной миграции
+alembic history -i
