@@ -1,12 +1,18 @@
 from fastapi import APIRouter, HTTPException
 
 from app.crud.meeting_room import create_meeting_room, get_room_id_by_name
-from app.schemas.meeting_room import MeetingRoomCreate
+from app.schemas.meeting_room import MeetingRoomCreate, MeetingRoomDB
 
 router = APIRouter()
 
 
-@router.post('/meeting_rooms/')
+@router.post(
+        '/meeting_rooms/',
+        response_model=MeetingRoomDB,  # Указываем схему ответа.
+        response_model_exclude_none=True,  # Исключить поля с None из ответа.
+        # response_model_exclude_unset Исключать поля, которые не были установлены
+        # response_model_exclude_defaults Исключать значения по умолчанию
+    )
 async def create_new_meeting_room(meeting_room: MeetingRoomCreate):
     room_id = await get_room_id_by_name(meeting_room.name)
     if room_id is not None:
