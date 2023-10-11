@@ -12,6 +12,7 @@ app = FastAPI(
     redoc_url='/redoc'
     )
 
+# Подключаем роутер.
 app.include_router(router)
 
 # if __name__ == '__main__':
