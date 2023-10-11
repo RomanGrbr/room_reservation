@@ -74,3 +74,15 @@ async def update_meeting_room(
     await session.commit()
     await session.refresh(db_room)
     return db_room
+
+
+async def delete_meeting_room(
+        db_room: MeetingRoom,
+        session: AsyncSession,
+) -> MeetingRoom:
+    # Удалить объект из БД.
+    await session.delete(db_room)
+    await session.commit()
+    # Не обновляем объект через метод refresh(),
+    # следовательно он всё ещё содержит информацию об удаляемом объекте.
+    return db_room
