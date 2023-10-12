@@ -16,6 +16,8 @@ class MeetingRoomDB(MeetingRoomBase):
     id: int
 
     class Config:
+        # Укажет модели Pydantic прочитать данные, даже если это не dictмодель,
+        # а ORM (или любой другой произвольный объект с атрибутами)
         orm_mode = True
 
 
