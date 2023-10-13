@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
 # Класс асинхронной сессии для аннотации параметра.
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,7 +14,7 @@ from app.crud.meeting_room import meeting_room_crud
 from app.schemas.meeting_room import (
     MeetingRoomCreate, MeetingRoomDB, MeetingRoomUpdate
 )
-from app.models.meeting_room import MeetingRoom
+# from app.models.meeting_room import MeetingRoom
 from app.api.validators import check_name_duplicate, check_meeting_room_exists
 
 # router = APIRouter(
