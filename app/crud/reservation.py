@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import select, or_
+from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.encoders import jsonable_encoder
 
 from app.crud.base import CRUDBase
 from app.models.reservation import Reservation
@@ -27,15 +28,17 @@ class CRUDReservation(
         # если это время полностью или частично зарезервировано в
         # каких-то объектах бронирования — метод возвращает
         # список этих объектов.
-        # reservations = await session.execute(
-        #     select(Reservation).filter(
-        #         or_(Reservation.to_reserve < from_reserve,
-        #             Reservation.from_reserve > to_reserve)
-        #     )
-        # )
-        # reservations = reservations.scalars().all()
-        # return reservations
-        return []
+        reservations = await session.execute(
+            select(Reservation).where(
+                Reservation.meetingroom_id == meetingroom_id,
+                and_(
+                    from_reserve <= Reservation.to_reserve,
+                    to_reserve >= Reservation.from_reserve
+                )
+            )
+        )
+        reservations = reservations.scalars().all()
+        return reservations
 
 
 reservation_crud = CRUDReservation(Reservation)
