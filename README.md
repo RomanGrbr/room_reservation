@@ -33,3 +33,6 @@ alembic current
 
 вывести метку актуальной миграции
 alembic history -i
+
+FastAPI Users с SQLAlchemy
+pip install "fastapi-users[sqlalchemy]==10.0.6"
