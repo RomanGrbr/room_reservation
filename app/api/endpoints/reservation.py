@@ -56,6 +56,7 @@ async def delete_reservation(
     reservation = await reservation_crud.remove(reservation, session)
     return reservation
 
+
 @router.patch('/{reservation_id}', response_model=ReservationDB)
 async def update_reservation(
         reservation_id: int,
@@ -78,7 +79,8 @@ async def update_reservation(
     )
     reservation = await reservation_crud.update(
         db_obj=reservation,
-        # На обновление передаем объект класса ReservationUpdate, как и требуется.
+        # На обновление передаем объект класса ReservationUpdate,
+        # как и требуется.
         obj_in=obj_in,
         session=session,
     )
