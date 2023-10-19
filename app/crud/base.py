@@ -1,4 +1,4 @@
-from typing import Generic, List, Optional, Type, TypeVar
+from typing import Generic, List, Optional, Type, TypeVar, Optional
 
 from pydantic import BaseModel
 # Конвертирует в JSON-формат как объекты из базы данных, так и Pydantic-модели
@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 from app.core.db import Base
+from app.models import User
 
 ModelType = TypeVar('ModelType', bound=Base)
 CreateSchemaType = TypeVar('CreateSchemaType', bound=BaseModel)
@@ -37,10 +38,15 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return db_objs.scalars().all()
 
     async def create(
-            self, obj_in: CreateSchemaType, session: AsyncSession
+            self,
+            obj_in: CreateSchemaType,
+            session: AsyncSession,
+            user: Optional[User] = None
     ) -> ModelType:
         """Создать запись"""
         obj_in_data = obj_in.dict()  # Конвертируем объект в словарь.
+        if user is not None:
+            obj_in_data['user_id'] = user.id
         db_obj = self.model(**obj_in_data)
         session.add(db_obj)  # Добавляем созданный объект в сессию.
         await session.commit()  # Записываем изменения непосредственно в БД.

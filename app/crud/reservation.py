@@ -23,7 +23,8 @@ class CRUDReservation(
             to_reserve: datetime,
             meetingroom_id: int,
             reservation_id: Optional[int] = None,
-            session: AsyncSession
+            session: AsyncSession,
+            **kwargs
     ) -> list[Reservation]:
         """Свободен ли запрошенный интервал времени"""
         # если это время полностью или частично зарезервировано в

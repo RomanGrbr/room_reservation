@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Optional
 
 from pydantic import BaseModel, Extra, Field, root_validator, validator
 
@@ -15,6 +16,7 @@ TO_TIME = (
 class ReservationBase(BaseModel):
     from_reserve: datetime = Field(..., example=FROM_TIME)
     to_reserve: datetime = Field(..., example=TO_TIME)
+    user_id: Optional[int]
 
     class Config:
         # Запретить пользователю передавать параметры, не описанные в схеме
