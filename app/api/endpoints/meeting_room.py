@@ -18,6 +18,7 @@ from app.schemas.meeting_room import (
 from app.schemas.reservation import ReservationDB
 # from app.models.meeting_room import MeetingRoom
 from app.api.validators import check_name_duplicate, check_meeting_room_exists
+from app.core.user import current_superuser
 
 # router = APIRouter(
 #     prefix='/meeting_rooms',
@@ -27,13 +28,14 @@ router = APIRouter()
 
 
 @router.get(
-        '/',
-        response_model=list[MeetingRoomDB],
-        response_model_exclude_none=True,
-    )
+    '/',
+    response_model=list[MeetingRoomDB],
+    response_model_exclude_none=True,
+)
 async def get_all_meeting_rooms(
     session: AsyncSession = Depends(get_async_session),
 ):
+    """Получить все переговорки"""
     # all_rooms = await read_all_rooms_from_db(session)
     # Заменил вызов функции на вызов метода.
     all_rooms = await meeting_room_crud.get_multi(session)
@@ -41,16 +43,18 @@ async def get_all_meeting_rooms(
 
 
 @router.post(
-        '/',
-        response_model=MeetingRoomDB,  # Указываем схему ответа.
-        response_model_exclude_none=True,  # Исключить поля с None из ответа.
-        # response_model_exclude_unset Исключать поля, которые не были установлены
-        # response_model_exclude_defaults Исключать значения по умолчанию
-    )
+    '/',
+    response_model=MeetingRoomDB,  # Указываем схему ответа.
+    response_model_exclude_none=True,  # Исключить поля с None из ответа.
+    dependencies=[Depends(current_superuser)]  # Вызов зависимости при обработке запроса.
+    # response_model_exclude_unset Исключать поля, которые не были установлены
+    # response_model_exclude_defaults Исключать значения по умолчанию
+)
 async def create_new_meeting_room(
     meeting_room: MeetingRoomCreate,
     session: AsyncSession = Depends(get_async_session),
 ):
+    """Создать новую переговорку. Только для суперюзеров."""
     await check_name_duplicate(meeting_room.name, session)
     # new_room = await create_meeting_room(meeting_room, session)
     # Заменил вызов функции на вызов метода.
@@ -59,15 +63,17 @@ async def create_new_meeting_room(
 
 
 @router.patch(
-        '/{meeting_room_id}',
-        response_model=MeetingRoomDB,
-        response_model_exclude_none=True,
+    '/{meeting_room_id}',
+    response_model=MeetingRoomDB,
+    response_model_exclude_none=True,
+    dependencies=[Depends(current_superuser)],
 )
 async def partially_update_meeting_room(
     meeting_room_id: int,
     obj_in: MeetingRoomUpdate,
     session: AsyncSession = Depends(get_async_session),
 ):
+    """Редактирование переговорки. Только для суперюзеров."""
     meeting_room = await check_meeting_room_exists(
         meeting_room_id, session
     )
@@ -88,11 +94,13 @@ async def partially_update_meeting_room(
     '/{meeting_room_id}',
     response_model=MeetingRoomDB,
     response_model_exclude_none=True,
+    dependencies=[Depends(current_superuser)],
 )
 async def remove_meeting_room(
         meeting_room_id: int,
         session: AsyncSession = Depends(get_async_session),
 ):
+    """Удаление переговорки. Только для суперюзеров."""
     meeting_room = await check_meeting_room_exists(
         meeting_room_id, session
     )
@@ -106,7 +114,9 @@ async def remove_meeting_room(
 
 @router.get(
     '/{meeting_room_id}/reservations',
-    response_model=list[ReservationDB]
+    response_model=list[ReservationDB],
+    # Множество с полями, которые надо исключить из ответа.
+    response_model_exclude={'user_id'},
 )
 async def get_reservations_for_room(
     meeting_room_id: int,
